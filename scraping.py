@@ -104,7 +104,7 @@ urls = {'Theaetetus':'https://www.gutenberg.org/cache/epub/1726/pg1726-images.ht
         }
 
 if __name__ == "__main__":
-    columns = ['Instructions', 'Outputs']
+    columns = ['Conversation']
     df = pd.DataFrame(columns=columns)
 
     for name, link in urls.items():
@@ -130,12 +130,23 @@ if __name__ == "__main__":
             else:
                 outputs = outputs[:len(instructions)]
 
+        # data = {
+        #     "Instructions": instructions,
+        #     "Outputs": outputs
+        # }
+
+        # df = df.append(pd.DataFrame(data), ignore_index=True)
+
+        # Concatenating items from instructions and outputs lists
+        combined_data = [f"[INST] {inst} [/INST] {out} " for inst, out in zip(instructions, outputs)]
+
+        # Creating a dictionary with the concatenated data
         data = {
-            "Instructions": instructions,
-            "Outputs": outputs
+            "Conversation": combined_data
         }
 
         df = df.append(pd.DataFrame(data), ignore_index=True)
+
         
     table = pa.Table.from_pandas(df)
     pq.write_table(table, 'conversation.parquet')
